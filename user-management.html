@@ -1,0 +1,861 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Management - FIXER Admin</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.1/font/bootstrap-icons.min.css" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --primary-color: #667eea;
+            --secondary-color: #764ba2;
+        }
+        
+        body {
+            background: var(--primary-gradient);
+            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            padding: 20px;
+        }
+        
+        .container-fluid {
+            max-width: 1400px;
+        }
+        
+        .header-card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 25px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        .header-title {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        
+        .header-title h1 {
+            margin: 0;
+            color: #2c3e50;
+            font-size: 28px;
+            font-weight: bold;
+        }
+        
+        .header-buttons {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        
+        .search-filter-card {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        .search-box {
+            width: 100%;
+            padding: 12px 20px 12px 45px;
+            border: 2px solid #e0e0e0;
+            border-radius: 25px;
+            font-size: 16px;
+            transition: all 0.3s;
+        }
+        
+        .search-box:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 0.25rem rgba(102, 126, 234, 0.25);
+        }
+        
+        .search-wrapper {
+            position: relative;
+            margin-bottom: 20px;
+        }
+        
+        .search-icon {
+            position: absolute;
+            left: 18px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #666;
+            font-size: 18px;
+        }
+        
+        .filter-chips {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        
+        .filter-chip {
+            padding: 8px 20px;
+            border-radius: 20px;
+            border: 2px solid #e0e0e0;
+            background: white;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 14px;
+            font-weight: 500;
+        }
+        
+        .filter-chip:hover {
+            border-color: var(--primary-color);
+            background: #f0f4ff;
+        }
+        
+        .filter-chip.active {
+            background: var(--primary-gradient);
+            color: white;
+            border-color: transparent;
+        }
+        
+        .users-card {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        .user-item {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 15px;
+            transition: all 0.3s;
+            border-left: 4px solid transparent;
+        }
+        
+        .user-item:hover {
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            border-left-color: var(--primary-color);
+        }
+        
+        .user-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 10px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        
+        .user-info h4 {
+            margin: 0 0 5px 0;
+            color: #2c3e50;
+            font-size: 18px;
+            font-weight: 600;
+        }
+        
+        .user-info .email {
+            color: #666;
+            font-size: 14px;
+            margin-bottom: 8px;
+        }
+        
+        .user-badges {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        
+        .badge-custom {
+            padding: 5px 12px;
+            border-radius: 15px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        
+        .badge-pending { background: #fff3cd; color: #856404; }
+        .badge-active { background: #d4edda; color: #155724; }
+        .badge-inactive { background: #f8d7da; color: #721c24; }
+        
+        .badge-admin { background: #dc3545; color: white; }
+        .badge-technician { background: #0dcaf0; color: white; }
+        .badge-user { background: #6c757d; color: white; }
+        
+        .user-details {
+            color: #666;
+            font-size: 14px;
+            margin-top: 10px;
+            line-height: 1.6;
+        }
+        
+        .user-details i {
+            margin-right: 5px;
+            color: var(--primary-color);
+        }
+        
+        .user-actions {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid #dee2e6;
+        }
+        
+        .btn-action {
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 13px;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .btn-action:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        
+        .btn-approve { background: #28a745; color: white; }
+        .btn-edit { background: #17a2b8; color: white; }
+        .btn-deactivate { background: #ffc107; color: #333; }
+        .btn-activate { background: #28a745; color: white; }
+        .btn-role { background: #6f42c1; color: white; }
+        .btn-delete { background: #dc3545; color: white; }
+        
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #999;
+        }
+        
+        .empty-state i {
+            font-size: 64px;
+            color: #ddd;
+            margin-bottom: 20px;
+        }
+        
+        .loading-spinner {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 60px 20px;
+        }
+        
+        .modal-content {
+            border-radius: 15px;
+            border: none;
+        }
+        
+        .modal-header {
+            background: var(--primary-gradient);
+            color: white;
+            border-radius: 15px 15px 0 0;
+        }
+        
+        .stats-row {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .stat-card {
+            flex: 1;
+            min-width: 200px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+        }
+        
+        .stat-card h3 {
+            font-size: 32px;
+            margin: 0;
+            font-weight: bold;
+        }
+        
+        .stat-card p {
+            margin: 5px 0 0;
+            opacity: 0.9;
+        }
+        
+        @media (max-width: 768px) {
+            .header-title h1 { font-size: 24px; }
+            .user-header { flex-direction: column; }
+            .user-actions { flex-direction: column; }
+            .btn-action { width: 100%; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container-fluid">
+        <!-- Header -->
+        <div class="header-card">
+            <div class="header-title">
+                <div>
+                    <h1><i class="bi bi-people-fill"></i> User Management</h1>
+                    <p class="text-muted mb-0">Manage user accounts, roles, and permissions</p>
+                </div>
+                <div class="header-buttons">
+                    <button class="btn btn-primary" onclick="window.location.href='index.html'">
+                        <i class="bi bi-bar-chart-fill"></i> Dashboard
+                    </button>
+                    <button class="btn btn-danger" id="logoutBtn">
+                        <i class="bi bi-box-arrow-right"></i> Logout
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Statistics -->
+        <div class="stats-row" id="statsRow">
+            <div class="stat-card">
+                <h3 id="totalUsersCount">0</h3>
+                <p>Total Users</p>
+            </div>
+            <div class="stat-card">
+                <h3 id="pendingUsersCount">0</h3>
+                <p>Pending Approval</p>
+            </div>
+            <div class="stat-card">
+                <h3 id="activeUsersCount">0</h3>
+                <p>Active Users</p>
+            </div>
+            <div class="stat-card">
+                <h3 id="adminUsersCount">0</h3>
+                <p>Administrators</p>
+            </div>
+        </div>
+
+        <!-- Search and Filters -->
+        <div class="search-filter-card">
+            <div class="search-wrapper">
+                <i class="bi bi-search search-icon"></i>
+                <input type="text" class="search-box" id="searchBox" placeholder="Search by name, email, or campus...">
+            </div>
+            <div class="filter-chips" id="filterChips">
+                <div class="filter-chip active" data-filter="all">All</div>
+                <div class="filter-chip" data-filter="pending">Pending</div>
+                <div class="filter-chip" data-filter="approved">Approved</div>
+                <div class="filter-chip" data-filter="admin">Admin</div>
+                <div class="filter-chip" data-filter="technician">Technician</div>
+                <div class="filter-chip" data-filter="user">User</div>
+            </div>
+        </div>
+
+        <!-- Users List -->
+        <div class="users-card">
+            <div id="loadingSpinner" class="loading-spinner">
+                <div class="spinner-border text-primary" style="width: 3rem; height: 3rem;"></div>
+            </div>
+            <div id="usersContainer" style="display: none;"></div>
+            <div id="emptyState" class="empty-state" style="display: none;">
+                <i class="bi bi-inbox"></i>
+                <h3>No users found</h3>
+                <p>Users will appear here once registered</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit User Modal -->
+    <div class="modal fade" id="editUserModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Edit User Details</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" id="editUserId">
+                    <div class="mb-3">
+                        <label class="form-label">Full Name</label>
+                        <input type="text" class="form-control" id="editFullName" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Email</label>
+                        <input type="email" class="form-control" id="editEmail" disabled>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Campus</label>
+                        <input type="text" class="form-control" id="editCampus">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Department</label>
+                        <input type="text" class="form-control" id="editDepartment">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Phone</label>
+                        <input type="tel" class="form-control" id="editPhone">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" onclick="saveUserDetails()">Save Changes</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Firebase SDK -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/10.7.1/firebase-app-compat.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/10.7.1/firebase-auth-compat.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/10.7.1/firebase-database-compat.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        // Firebase Configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyCB1ElbvJf-ak4y5g48Z5mWlYql3dFF6Rs",
+            authDomain: "f-i-x-e-r.firebaseapp.com",
+            databaseURL: "https://f-i-x-e-r-default-rtdb.firebaseio.com",
+            projectId: "f-i-x-e-r",
+            storageBucket: "gs://f-i-x-e-r.firebasestorage.app",
+            messagingSenderId: "452985305062",
+            appId: "1:452985305062:android:3405f9d12528df98854827"
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const database = firebase.database();
+
+        // Global variables
+        let allUsers = [];
+        let filteredUsers = [];
+        let currentFilter = 'all';
+        let searchQuery = '';
+        let currentUser = null;
+        let editUserModal = null;
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            editUserModal = new bootstrap.Modal(document.getElementById('editUserModal'));
+            checkAuth();
+            setupEventListeners();
+        });
+
+        // Check authentication
+        function checkAuth() {
+            auth.onAuthStateChanged(async (user) => {
+                if (user) {
+                    try {
+                        const snapshot = await database.ref(`users/${user.uid}`).once('value');
+                        const userData = snapshot.val();
+                        
+                        if (userData && userData.role === 'ADMIN' && userData.approved && userData.roleActive) {
+                            currentUser = { uid: user.uid, email: user.email, ...userData };
+                            loadUsers();
+                        } else {
+                            window.location.href = 'admin-login.html';
+                        }
+                    } catch (error) {
+                        console.error('Auth error:', error);
+                        window.location.href = 'admin-login.html';
+                    }
+                } else {
+                    window.location.href = 'admin-login.html';
+                }
+            });
+        }
+
+        // Setup event listeners
+        function setupEventListeners() {
+            // Logout
+            document.getElementById('logoutBtn').addEventListener('click', () => {
+                if (confirm('Are you sure you want to logout?')) {
+                    auth.signOut().then(() => {
+                        window.location.href = 'admin-login.html';
+                    });
+                }
+            });
+
+            // Search
+            document.getElementById('searchBox').addEventListener('input', (e) => {
+                searchQuery = e.target.value.toLowerCase();
+                applyFilters();
+            });
+
+            // Filter chips
+            document.querySelectorAll('.filter-chip').forEach(chip => {
+                chip.addEventListener('click', () => {
+                    document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+                    chip.classList.add('active');
+                    currentFilter = chip.dataset.filter;
+                    applyFilters();
+                });
+            });
+        }
+
+        // Load users from Firebase
+        function loadUsers() {
+            database.ref('users').on('value', (snapshot) => {
+                allUsers = [];
+                
+                snapshot.forEach((childSnapshot) => {
+                    const user = childSnapshot.val();
+                    user.uid = childSnapshot.key;
+                    
+                    // Set defaults
+                    user.role = user.role || 'USER';
+                    user.roleActive = user.roleActive !== undefined ? user.roleActive : true;
+                    user.status = user.status || (user.approved ? 'approved' : 'pending');
+                    user.fullName = user.displayName || user.fullName || '';
+                    user.createdAt = user.createdAt || 0;
+                    user.lastLogin = user.lastLogin || 0;
+                    
+                    allUsers.push(user);
+                });
+
+                // Sort by most recent
+                allUsers.sort((a, b) => b.createdAt - a.createdAt);
+                
+                updateStatistics();
+                applyFilters();
+            });
+        }
+
+        // Update statistics
+        function updateStatistics() {
+            const total = allUsers.length;
+            const pending = allUsers.filter(u => !u.approved).length;
+            const active = allUsers.filter(u => u.approved && u.roleActive).length;
+            const admins = allUsers.filter(u => u.role === 'ADMIN').length;
+
+            document.getElementById('totalUsersCount').textContent = total;
+            document.getElementById('pendingUsersCount').textContent = pending;
+            document.getElementById('activeUsersCount').textContent = active;
+            document.getElementById('adminUsersCount').textContent = admins;
+        }
+
+        // Apply filters
+        function applyFilters() {
+            filteredUsers = allUsers.filter(user => {
+                // Filter by status/role
+                let matchesFilter = false;
+                switch (currentFilter) {
+                    case 'all':
+                        matchesFilter = true;
+                        break;
+                    case 'pending':
+                        matchesFilter = !user.approved;
+                        break;
+                    case 'approved':
+                        matchesFilter = user.approved;
+                        break;
+                    case 'admin':
+                        matchesFilter = user.role === 'ADMIN';
+                        break;
+                    case 'technician':
+                        matchesFilter = user.role === 'TECHNICIAN';
+                        break;
+                    case 'user':
+                        matchesFilter = user.role === 'USER';
+                        break;
+                }
+
+                // Filter by search
+                const matchesSearch = !searchQuery || 
+                    (user.fullName && user.fullName.toLowerCase().includes(searchQuery)) ||
+                    (user.email && user.email.toLowerCase().includes(searchQuery)) ||
+                    (user.campus && user.campus.toLowerCase().includes(searchQuery)) ||
+                    (user.department && user.department.toLowerCase().includes(searchQuery));
+
+                return matchesFilter && matchesSearch;
+            });
+
+            displayUsers();
+        }
+
+        // Display users
+        function displayUsers() {
+            const container = document.getElementById('usersContainer');
+            const emptyState = document.getElementById('emptyState');
+            const loadingSpinner = document.getElementById('loadingSpinner');
+
+            loadingSpinner.style.display = 'none';
+
+            if (filteredUsers.length === 0) {
+                container.style.display = 'none';
+                emptyState.style.display = 'block';
+                return;
+            }
+
+            container.style.display = 'block';
+            emptyState.style.display = 'none';
+
+            container.innerHTML = filteredUsers.map(user => {
+                const statusBadge = !user.approved ? 'badge-pending' : 
+                                   !user.roleActive ? 'badge-inactive' : 'badge-active';
+                const statusText = !user.approved ? 'PENDING' : 
+                                  !user.roleActive ? 'INACTIVE' : 'ACTIVE';
+                
+                const roleBadge = user.role === 'ADMIN' ? 'badge-admin' :
+                                 user.role === 'TECHNICIAN' ? 'badge-technician' : 'badge-user';
+
+                const details = [];
+                if (user.campus) details.push(`<i class="bi bi-building"></i>${user.campus}`);
+                if (user.department) details.push(`<i class="bi bi-briefcase"></i>${user.department}`);
+                if (user.phone) details.push(`<i class="bi bi-telephone"></i>${user.phone}`);
+
+                const lastLogin = user.lastLogin > 0 ? 
+                    `Last login: ${new Date(user.lastLogin).toLocaleDateString()}` : 
+                    'Never logged in';
+
+                return `
+                    <div class="user-item">
+                        <div class="user-header">
+                            <div class="user-info">
+                                <h4>${user.fullName || 'No Name'}</h4>
+                                <div class="email">${user.email || 'No Email'}</div>
+                                <div class="user-badges">
+                                    <span class="badge-custom ${statusBadge}">${statusText}</span>
+                                    <span class="badge-custom ${roleBadge}">${user.role}</span>
+                                </div>
+                            </div>
+                        </div>
+                        ${details.length > 0 ? `<div class="user-details">${details.join(' • ')}</div>` : ''}
+                        <div class="user-details"><i class="bi bi-clock"></i>${lastLogin}</div>
+                        <div class="user-actions">
+                            <button class="btn-action btn-edit" onclick="showEditDialog('${user.uid}')">
+                                <i class="bi bi-pencil"></i> Edit
+                            </button>
+                            ${!user.approved ? `
+                                <button class="btn-action btn-approve" onclick="approveUser('${user.uid}')">
+                                    <i class="bi bi-check-circle"></i> Approve
+                                </button>
+                            ` : ''}
+                            ${user.approved && user.roleActive ? `
+                                <button class="btn-action btn-deactivate" onclick="toggleActivation('${user.uid}', false)">
+                                    <i class="bi bi-x-circle"></i> Deactivate
+                                </button>
+                            ` : ''}
+                            ${user.approved && !user.roleActive ? `
+                                <button class="btn-action btn-activate" onclick="toggleActivation('${user.uid}', true)">
+                                    <i class="bi bi-check-circle"></i> Activate
+                                </button>
+                            ` : ''}
+                            ${user.role !== 'ADMIN' ? `
+                                <button class="btn-action btn-role" onclick="changeRole('${user.uid}', 'ADMIN')">
+                                    <i class="bi bi-shield-fill"></i> Make Admin
+                                </button>
+                            ` : ''}
+                            ${user.role !== 'TECHNICIAN' ? `
+                                <button class="btn-action btn-role" onclick="changeRole('${user.uid}', 'TECHNICIAN')">
+                                    <i class="bi bi-tools"></i> Make Technician
+                                </button>
+                            ` : ''}
+                            ${user.role !== 'USER' ? `
+                                <button class="btn-action btn-role" onclick="changeRole('${user.uid}', 'USER')">
+                                    <i class="bi bi-person"></i> Make User
+                                </button>
+                            ` : ''}
+                            <button class="btn-action btn-delete" onclick="confirmDelete('${user.uid}')">
+                                <i class="bi bi-trash"></i> Delete
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Show edit dialog
+        function showEditDialog(userId) {
+            const user = allUsers.find(u => u.uid === userId);
+            if (!user) return;
+
+            document.getElementById('editUserId').value = user.uid;
+            document.getElementById('editFullName').value = user.fullName || '';
+            document.getElementById('editEmail').value = user.email || '';
+            document.getElementById('editCampus').value = user.campus || '';
+            document.getElementById('editDepartment').value = user.department || '';
+            document.getElementById('editPhone').value = user.phone || '';
+
+            editUserModal.show();
+        }
+
+        // Save user details
+        async function saveUserDetails() {
+            const userId = document.getElementById('editUserId').value;
+            const fullName = document.getElementById('editFullName').value.trim();
+            const campus = document.getElementById('editCampus').value.trim();
+            const department = document.getElementById('editDepartment').value.trim();
+            const phone = document.getElementById('editPhone').value.trim();
+
+            if (!fullName) {
+                alert('Full name is required');
+                return;
+            }
+
+            try {
+                await database.ref(`users/${userId}`).update({
+                    displayName: fullName,
+                    fullName: fullName,
+                    campus: campus,
+                    department: department,
+                    phone: phone
+                });
+
+                // Also update access_requests if exists
+                await database.ref(`access_requests/${userId}`).update({
+                    fullName: fullName,
+                    campus: campus,
+                    department: department,
+                    phone: phone
+                });
+
+                editUserModal.hide();
+                showToast('User details updated successfully', 'success');
+            } catch (error) {
+                console.error('Error updating user:', error);
+                showToast('Failed to update user details', 'error');
+            }
+        }
+
+        // Approve user
+        async function approveUser(userId) {
+            try {
+                const user = allUsers.find(u => u.uid === userId);
+                const updates = {
+                    approved: true,
+                    status: 'approved',
+                    roleActive: true
+                };
+
+                // Only set role if user doesn't have one
+                if (!user.role || user.role === '') {
+                    updates.role = 'USER';
+                }
+
+                await database.ref(`users/${userId}`).update(updates);
+
+                // Update access_requests
+                await database.ref(`access_requests/${userId}`).update({
+                    status: 'approved',
+                    approvedAt: Date.now(),
+                    approvedBy: currentUser.email
+                });
+
+                showToast('User approved successfully', 'success');
+            } catch (error) {
+                console.error('Error approving user:', error);
+                showToast('Failed to approve user', 'error');
+            }
+        }
+
+        // Toggle user activation
+        async function toggleActivation(userId, activate) {
+            try {
+                await database.ref(`users/${userId}`).update({
+                    roleActive: activate
+                });
+
+                showToast(`User ${activate ? 'activated' : 'deactivated'} successfully`, 'success');
+            } catch (error) {
+                console.error('Error toggling activation:', error);
+                showToast('Failed to update user status', 'error');
+            }
+        }
+
+        // Change user role
+        async function changeRole(userId, newRole) {
+            if (!confirm(`Are you sure you want to change this user's role to ${newRole}?`)) {
+                return;
+            }
+
+            try {
+                await database.ref(`users/${userId}`).update({
+                    role: newRole
+                });
+
+                showToast(`User role changed to ${newRole}`, 'success');
+            } catch (error) {
+                console.error('Error changing role:', error);
+                showToast('Failed to change user role', 'error');
+            }
+        }
+
+        // Confirm delete
+        function confirmDelete(userId) {
+            const user = allUsers.find(u => u.uid === userId);
+            if (!user) return;
+
+            if (confirm(`Are you sure you want to delete ${user.fullName || user.email}? This action cannot be undone.`)) {
+                deleteUser(userId);
+            }
+        }
+
+        // Delete user
+        async function deleteUser(userId) {
+            try {
+                await database.ref(`users/${userId}`).remove();
+                await database.ref(`access_requests/${userId}`).remove();
+
+                showToast('User deleted successfully', 'success');
+            } catch (error) {
+                console.error('Error deleting user:', error);
+                showToast('Failed to delete user', 'error');
+            }
+        }
+
+        // Show toast notification
+        function showToast(message, type) {
+            const toast = document.createElement('div');
+            toast.style.cssText = `
+                position: fixed;
+                bottom: 20px;
+                right: 20px;
+                background: ${type === 'success' ? '#28a745' : '#dc3545'};
+                color: white;
+                padding: 15px 25px;
+                border-radius: 8px;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+                z-index: 10000;
+                animation: slideIn 0.3s ease-out;
+            `;
+            toast.innerHTML = `
+                <i class="bi bi-${type === 'success' ? 'check-circle' : 'x-circle'}"></i> ${message}
+            `;
+            
+            document.body.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.style.animation = 'slideOut 0.3s ease-out';
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+
+        // Add animation styles
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes slideIn {
+                from {
+                    transform: translateX(400px);
+                    opacity: 0;
+                }
+                to {
+                    transform: translateX(0);
+                    opacity: 1;
+                }
+            }
+            @keyframes slideOut {
+                from {
+                    transform: translateX(0);
+                    opacity: 1;
+                }
+                to {
+                    transform: translateX(400px);
+                    opacity: 0;
+                }
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
+</body>
+</html>

@@ -1,0 +1,779 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Login - FIXER</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.1/font/bootstrap-icons.min.css" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --primary-color: #667eea;
+            --secondary-color: #764ba2;
+        }
+        
+        body {
+            background: var(--primary-gradient);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            padding: 20px;
+        }
+        
+        .login-container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+            max-width: 450px;
+            width: 100%;
+            animation: slideUp 0.5s ease-out;
+        }
+        
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .login-header {
+            background: var(--primary-gradient);
+            padding: 40px 30px;
+            text-align: center;
+            color: white;
+        }
+        
+        .logo-container {
+            width: 100px;
+            height: 100px;
+            margin: 0 auto 20px;
+            background: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            animation: logoFloat 3s ease-in-out infinite;
+        }
+        
+        @keyframes logoFloat {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+        
+        .logo-container i {
+            font-size: 50px;
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .login-header h1 {
+            margin: 0;
+            font-size: 28px;
+            font-weight: bold;
+        }
+        
+        .login-header p {
+            margin: 10px 0 0;
+            opacity: 0.9;
+            font-size: 14px;
+        }
+        
+        .login-body {
+            padding: 40px 30px;
+        }
+        
+        .form-floating {
+            margin-bottom: 20px;
+        }
+        
+        .password-input-wrapper {
+            position: relative;
+            margin-bottom: 20px;
+        }
+        
+        .password-input-wrapper .form-floating {
+            margin-bottom: 0;
+        }
+        
+        .password-toggle {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+            color: #666;
+            font-size: 18px;
+            z-index: 10;
+            padding: 5px;
+            transition: color 0.3s;
+        }
+        
+        .password-toggle:hover {
+            color: var(--primary-color);
+        }
+        
+        .password-input-wrapper .form-control {
+            padding-right: 45px;
+        }
+        
+        .form-control {
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            padding: 12px 15px;
+            transition: all 0.3s;
+        }
+        
+        .form-control:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 0.25rem rgba(102, 126, 234, 0.25);
+        }
+        
+        .btn-login {
+            width: 100%;
+            padding: 14px;
+            border-radius: 10px;
+            border: none;
+            background: var(--primary-gradient);
+            color: white;
+            font-weight: bold;
+            font-size: 16px;
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .btn-login:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+        }
+        
+        .btn-login:active {
+            transform: translateY(0);
+        }
+        
+        .btn-login:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .btn-login .spinner-border {
+            width: 20px;
+            height: 20px;
+            border-width: 2px;
+        }
+        
+        .remember-forgot {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            font-size: 14px;
+        }
+        
+        .form-check-label {
+            cursor: pointer;
+        }
+        
+        .forgot-password {
+            color: var(--primary-color);
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+        
+        .forgot-password:hover {
+            color: var(--secondary-color);
+            text-decoration: underline;
+        }
+        
+        .alert {
+            border-radius: 10px;
+            border: none;
+            margin-bottom: 20px;
+            animation: slideDown 0.3s ease-out;
+        }
+        
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .alert-danger {
+            background: #fee;
+            color: #c33;
+        }
+        
+        .alert-success {
+            background: #efe;
+            color: #3c3;
+        }
+        
+        .alert-warning {
+            background: #fff3cd;
+            color: #856404;
+        }
+        
+        .lockout-message {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: none;
+        }
+        
+        .lockout-message i {
+            font-size: 20px;
+            margin-right: 10px;
+        }
+        
+        .footer-text {
+            text-align: center;
+            margin-top: 20px;
+            color: #666;
+            font-size: 13px;
+        }
+        
+        .security-badge {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+            color: #666;
+            font-size: 12px;
+            margin-top: 15px;
+        }
+        
+        .security-badge i {
+            color: #28a745;
+        }
+        
+        @media (max-width: 576px) {
+            .login-header {
+                padding: 30px 20px;
+            }
+            
+            .login-header h1 {
+                font-size: 24px;
+            }
+            
+            .login-body {
+                padding: 30px 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <!-- Header -->
+        <div class="login-header">
+            <div class="logo-container">
+                <i class="bi bi-tools"></i>
+            </div>
+            <h1>FIXER Admin</h1>
+            <p>Analytics Dashboard Login</p>
+        </div>
+        
+        <!-- Body -->
+        <div class="login-body">
+            <!-- Lockout Message -->
+            <div class="lockout-message" id="lockoutMessage">
+                <i class="bi bi-exclamation-triangle-fill"></i>
+                <span id="lockoutText"></span>
+            </div>
+            
+            <!-- Alert Message -->
+            <div id="alertMessage"></div>
+            
+            <!-- Login Form -->
+            <form id="loginForm">
+                <!-- Email Input -->
+                <div class="form-floating">
+                    <input type="email" class="form-control" id="emailInput" placeholder="name@example.com" required>
+                    <label for="emailInput">
+                        <i class="bi bi-envelope"></i> Email Address
+                    </label>
+                </div>
+                
+                <!-- Password Input -->
+                <div class="password-input-wrapper">
+                    <div class="form-floating">
+                        <input type="password" class="form-control" id="passwordInput" placeholder="Password" required>
+                        <label for="passwordInput">
+                            <i class="bi bi-lock"></i> Password
+                        </label>
+                    </div>
+                    <span class="password-toggle" id="togglePassword" title="Show/Hide Password">
+                        <i class="bi bi-eye"></i>
+                    </span>
+                </div>
+                
+                <!-- Remember Me & Forgot Password -->
+                <div class="remember-forgot">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="rememberMe">
+                        <label class="form-check-label" for="rememberMe">
+                            Remember me
+                        </label>
+                    </div>
+                    <a href="#" class="forgot-password" id="forgotPasswordLink">Forgot Password?</a>
+                </div>
+                
+                <!-- Login Button -->
+                <button type="submit" class="btn btn-login" id="loginButton">
+                    <i class="bi bi-box-arrow-in-right"></i> Sign In
+                </button>
+            </form>
+            
+            <!-- Footer -->
+            <div class="footer-text">
+                <div class="security-badge">
+                    <i class="bi bi-shield-fill-check"></i>
+                    <span>Secure Admin Access</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Firebase SDK -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/10.7.1/firebase-app-compat.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/10.7.1/firebase-auth-compat.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/10.7.1/firebase-database-compat.min.js"></script>
+    
+    <script>
+        // Firebase Configuration (same as Android app)
+        const firebaseConfig = {
+            apiKey: "AIzaSyCB1ElbvJf-ak4y5g48Z5mWlYql3dFF6Rs",
+            authDomain: "f-i-x-e-r.firebaseapp.com",
+            databaseURL: "https://f-i-x-e-r-default-rtdb.firebaseio.com",
+            projectId: "f-i-x-e-r",
+            storageBucket: "gs://f-i-x-e-r.firebasestorage.app",
+            messagingSenderId: "452985305062",
+            appId: "1:452985305062:android:3405f9d12528df98854827"
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const database = firebase.database();
+
+        // Login attempt security constants
+        const MAX_LOGIN_ATTEMPTS = 5;
+        const LOCKOUT_DURATION = 15 * 60 * 1000; // 15 minutes
+
+        // DOM Elements
+        const loginForm = document.getElementById('loginForm');
+        const emailInput = document.getElementById('emailInput');
+        const passwordInput = document.getElementById('passwordInput');
+        const loginButton = document.getElementById('loginButton');
+        const rememberMeCheckbox = document.getElementById('rememberMe');
+        const togglePassword = document.getElementById('togglePassword');
+        const forgotPasswordLink = document.getElementById('forgotPasswordLink');
+        const alertMessage = document.getElementById('alertMessage');
+        const lockoutMessage = document.getElementById('lockoutMessage');
+        const lockoutText = document.getElementById('lockoutText');
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            loadSavedCredentials();
+            checkAccountLockout();
+            setupEventListeners();
+        });
+
+        function setupEventListeners() {
+            // Login form submission
+            loginForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                attemptLogin();
+            });
+
+            // Toggle password visibility
+            togglePassword.addEventListener('click', () => {
+                const type = passwordInput.type === 'password' ? 'text' : 'password';
+                passwordInput.type = type;
+                togglePassword.querySelector('i').classList.toggle('bi-eye');
+                togglePassword.querySelector('i').classList.toggle('bi-eye-slash');
+            });
+
+            // Forgot password
+            forgotPasswordLink.addEventListener('click', (e) => {
+                e.preventDefault();
+                handleForgotPassword();
+            });
+        }
+
+        // Load saved credentials if remember me was checked
+        function loadSavedCredentials() {
+            const savedEmail = localStorage.getItem('admin_email');
+            const rememberMe = localStorage.getItem('admin_remember') === 'true';
+
+            if (rememberMe && savedEmail) {
+                emailInput.value = savedEmail;
+                rememberMeCheckbox.checked = true;
+
+                // Check if user is already logged in
+                auth.onAuthStateChanged(user => {
+                    if (user) {
+                        // Verify they're an admin
+                        verifyAdminAndRedirect(user);
+                    }
+                });
+            }
+        }
+
+        // Check account lockout
+        function checkAccountLockout() {
+            const lockoutTime = localStorage.getItem('admin_lockout_time');
+            const currentTime = Date.now();
+
+            if (lockoutTime && parseInt(lockoutTime) > currentTime) {
+                const remainingTime = parseInt(lockoutTime) - currentTime;
+                disableLoginWithLockout(remainingTime);
+            } else if (lockoutTime) {
+                resetLoginAttempts();
+            }
+        }
+
+        function disableLoginWithLockout(remainingTime) {
+            loginButton.disabled = true;
+            emailInput.disabled = true;
+            passwordInput.disabled = true;
+
+            const minutes = Math.floor(remainingTime / 60000);
+            const seconds = Math.floor((remainingTime % 60000) / 1000);
+
+            lockoutText.textContent = `Account locked due to too many failed login attempts. Please try again in ${minutes} minutes and ${seconds} seconds.`;
+            lockoutMessage.style.display = 'block';
+
+            // Update countdown every second
+            setTimeout(() => {
+                const newLockoutTime = localStorage.getItem('admin_lockout_time');
+                const newCurrentTime = Date.now();
+                
+                if (newLockoutTime && parseInt(newLockoutTime) > newCurrentTime) {
+                    checkAccountLockout();
+                } else {
+                    resetLoginAttempts();
+                }
+            }, 1000);
+        }
+
+        function resetLoginAttempts() {
+            localStorage.removeItem('admin_login_attempts');
+            localStorage.removeItem('admin_lockout_time');
+
+            loginButton.disabled = false;
+            emailInput.disabled = false;
+            passwordInput.disabled = false;
+            lockoutMessage.style.display = 'none';
+        }
+
+        function incrementLoginAttempts() {
+            let attempts = parseInt(localStorage.getItem('admin_login_attempts') || '0') + 1;
+            localStorage.setItem('admin_login_attempts', attempts);
+
+            const remainingAttempts = MAX_LOGIN_ATTEMPTS - attempts;
+
+            if (attempts >= MAX_LOGIN_ATTEMPTS) {
+                // Lock the account
+                const lockoutTime = Date.now() + LOCKOUT_DURATION;
+                localStorage.setItem('admin_lockout_time', lockoutTime);
+                disableLoginWithLockout(LOCKOUT_DURATION);
+                
+                // Log security event
+                logSecurityEvent('account_locked', 'Too many failed login attempts');
+            } else if (remainingAttempts <= 2) {
+                showAlert(`Invalid credentials. ${remainingAttempts} attempt(s) remaining before account lockout.`, 'warning');
+            } else {
+                showAlert('Invalid credentials. Please try again.', 'danger');
+            }
+        }
+
+        // Attempt login
+        async function attemptLogin() {
+            // Check if account is locked
+            const lockoutTime = localStorage.getItem('admin_lockout_time');
+            if (lockoutTime && parseInt(lockoutTime) > Date.now()) {
+                const minutes = Math.floor((parseInt(lockoutTime) - Date.now()) / 60000);
+                showAlert(`Account is locked. Please try again in ${minutes} minutes.`, 'warning');
+                return;
+            }
+
+            const email = emailInput.value.trim();
+            const password = passwordInput.value.trim();
+
+            // Validate inputs
+            if (!validateInputs(email, password)) {
+                return;
+            }
+
+            // Show loading state
+            showLoading(true);
+            clearAlert();
+
+            try {
+                // Sign in with Firebase
+                const userCredential = await auth.signInWithEmailAndPassword(email, password);
+                const user = userCredential.user;
+
+                // Check if email is verified
+                if (!user.emailVerified) {
+                    showAlert('Your email address is not verified. Please check your inbox.', 'warning');
+                    auth.signOut();
+                    showLoading(false);
+                    return;
+                }
+
+                // Check if user is admin
+                const snapshot = await database.ref(`users/${user.uid}`).once('value');
+                
+                if (!snapshot.exists()) {
+                    showAlert('User data not found. Please contact administrator.', 'danger');
+                    auth.signOut();
+                    showLoading(false);
+                    return;
+                }
+
+                const userData = snapshot.val();
+
+                // Verify user is admin
+                if (userData.role !== 'ADMIN') {
+                    showAlert('Access denied. Admin privileges required.', 'danger');
+                    auth.signOut();
+                    showLoading(false);
+                    logSecurityEvent('unauthorized_access', `Non-admin user attempted to access admin panel: ${email}`);
+                    return;
+                }
+
+                // Check if user is approved and active
+                if (!userData.approved) {
+                    showAlert('Your account is pending approval. Please wait for administrator approval.', 'warning');
+                    auth.signOut();
+                    showLoading(false);
+                    return;
+                }
+
+                if (!userData.roleActive) {
+                    showAlert('Your account has been deactivated. Please contact administrator.', 'danger');
+                    auth.signOut();
+                    showLoading(false);
+                    return;
+                }
+
+                // Reset login attempts on successful login
+                resetLoginAttempts();
+
+                // Log successful login
+                logSecurityEvent('login_success', 'Admin logged in successfully');
+
+                // Update last login
+                await database.ref(`users/${user.uid}`).update({
+                    lastLogin: Date.now()
+                });
+
+                // Save credentials if remember me is checked
+                if (rememberMeCheckbox.checked) {
+                    localStorage.setItem('admin_email', email);
+                    localStorage.setItem('admin_remember', 'true');
+                } else {
+                    localStorage.removeItem('admin_email');
+                    localStorage.removeItem('admin_remember');
+                }
+
+                // Show success and redirect
+                showAlert('Login successful! Redirecting...', 'success');
+                
+                setTimeout(() => {
+                    window.location.href = 'index.html'; // Redirect to analytics dashboard
+                }, 1000);
+
+            } catch (error) {
+                console.error('Login error:', error);
+                
+                // Increment failed login attempts
+                incrementLoginAttempts();
+
+                // Log failed login
+                logSecurityEvent('login_failed', `Invalid credentials: ${email}`);
+
+                let errorMessage = 'Login failed. Please check your credentials.';
+
+                if (error.code === 'auth/user-not-found') {
+                    errorMessage = 'No account found with this email.';
+                } else if (error.code === 'auth/wrong-password') {
+                    errorMessage = 'Invalid password. Please try again.';
+                } else if (error.code === 'auth/invalid-email') {
+                    errorMessage = 'Invalid email address.';
+                } else if (error.code === 'auth/network-request-failed') {
+                    errorMessage = 'Network error. Please check your connection.';
+                } else if (error.code === 'auth/too-many-requests') {
+                    errorMessage = 'Too many failed attempts. Please try again later.';
+                }
+
+                showAlert(errorMessage, 'danger');
+                showLoading(false);
+            }
+        }
+
+        // Verify admin and redirect
+        async function verifyAdminAndRedirect(user) {
+            try {
+                const snapshot = await database.ref(`users/${user.uid}`).once('value');
+                
+                if (snapshot.exists()) {
+                    const userData = snapshot.val();
+                    
+                    if (userData.role === 'ADMIN' && userData.approved && userData.roleActive) {
+                        // Update last login
+                        await database.ref(`users/${user.uid}`).update({
+                            lastLogin: Date.now()
+                        });
+                        
+                        // Redirect to dashboard
+                        window.location.href = 'index.html';
+                    } else {
+                        // Not an admin or not active
+                        auth.signOut();
+                        localStorage.removeItem('admin_email');
+                        localStorage.removeItem('admin_remember');
+                    }
+                }
+            } catch (error) {
+                console.error('Error verifying admin:', error);
+            }
+        }
+
+        // Validate inputs
+        function validateInputs(email, password) {
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+            if (!email) {
+                showAlert('Email is required', 'danger');
+                emailInput.focus();
+                return false;
+            }
+
+            if (!emailRegex.test(email)) {
+                showAlert('Please enter a valid email address', 'danger');
+                emailInput.focus();
+                return false;
+            }
+
+            if (!password) {
+                showAlert('Password is required', 'danger');
+                passwordInput.focus();
+                return false;
+            }
+
+            if (password.length < 6) {
+                showAlert('Password must be at least 6 characters', 'danger');
+                passwordInput.focus();
+                return false;
+            }
+
+            return true;
+        }
+
+        // Handle forgot password
+        async function handleForgotPassword() {
+            const email = emailInput.value.trim();
+            
+            if (!email) {
+                showAlert('Please enter your email address first', 'warning');
+                emailInput.focus();
+                return;
+            }
+
+            if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+                showAlert('Please enter a valid email address', 'danger');
+                emailInput.focus();
+                return;
+            }
+
+            try {
+                showLoading(true);
+                await auth.sendPasswordResetEmail(email);
+                showAlert('Password reset email sent! Please check your inbox.', 'success');
+                showLoading(false);
+            } catch (error) {
+                console.error('Password reset error:', error);
+                
+                let errorMessage = 'Failed to send password reset email.';
+                
+                if (error.code === 'auth/user-not-found') {
+                    errorMessage = 'No account found with this email address.';
+                } else if (error.code === 'auth/invalid-email') {
+                    errorMessage = 'Invalid email address.';
+                }
+                
+                showAlert(errorMessage, 'danger');
+                showLoading(false);
+            }
+        }
+
+        // Log security event to Firebase
+        function logSecurityEvent(eventType, details) {
+            const email = emailInput.value.trim();
+            
+            const securityEvent = {
+                email: email || 'unknown',
+                eventType: eventType,
+                details: details,
+                timestamp: Date.now(),
+                deviceInfo: navigator.userAgent,
+                platform: 'web'
+            };
+
+            database.ref('security_events').push(securityEvent);
+        }
+
+        // Show alert message
+        function showAlert(message, type) {
+            alertMessage.innerHTML = `
+                <div class="alert alert-${type} alert-dismissible fade show" role="alert">
+                    <i class="bi bi-${type === 'success' ? 'check-circle' : type === 'warning' ? 'exclamation-triangle' : 'x-circle'}"></i>
+                    ${message}
+                    <button type="button" class="btn-close" onclick="this.parentElement.remove()"></button>
+                </div>
+            `;
+        }
+
+        // Clear alert message
+        function clearAlert() {
+            alertMessage.innerHTML = '';
+        }
+
+        // Show/hide loading state
+        function showLoading(show) {
+            if (show) {
+                loginButton.disabled = true;
+                loginButton.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Signing in...';
+            } else {
+                loginButton.disabled = false;
+                loginButton.innerHTML = '<i class="bi bi-box-arrow-in-right"></i> Sign In';
+            }
+        }
+    </script>
+</body>
+</html>
